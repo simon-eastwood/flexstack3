@@ -16,52 +16,28 @@ const MAXTABSETS = 6;
 function App() {
   // currentModel is what we're currently rendering.
   // If we need to alter the layout due to size restrictions, the previous state is saved in "stashedModels" so that it can be restored later
-  const [currentModel, _setCurrentModel] = useState<IAnalyzedModel>(() => {
+  const [currentModel, setCurrentModel] = useState<IAnalyzedModel>(() => {
     return loadTemplateModel()
   });
-  const [maxPanels, setMaxPanels] = useState(1);
 
-  const setCurrentModel = (m: IAnalyzedModel) => {
-
-
-
-    console.log("setting onAllowDrop")
-    m.model.setOnAllowDrop((dragNode, dropInfo) => {
-
-      let dropNode = dropInfo.node;
-
-
-      if (dropInfo.location === DockLocation.BOTTOM || dropInfo.location === DockLocation.TOP) {
-        console.log("blocking drop on bottom / top to avoid complications with setting width");
+  useEffect(() => {
+    currentModel.model.setOnAllowDrop((dragNode, dropInfo) => {
+ /*      if (dropInfo.location === DockLocation.BOTTOM || dropInfo.location === DockLocation.TOP) {
+        // blocking drop on bottom / top to avoid complications with setting width for layouts with multi horz rows
         return false;
-      } else if ((dropInfo.location === DockLocation.LEFT || dropInfo.location === DockLocation.RIGHT) && m.nrOfHorizontalTabsets >= MAXTABSETS) {
+      } else */ if ((dropInfo.location === DockLocation.LEFT || dropInfo.location === DockLocation.RIGHT) && currentModel.nrOfHorizontalTabsets >= MAXTABSETS) {
         return false;
       }
 
       return true;
 
-      /*       if (m.nrOfHorizontalTabsets >= MAXTABSETS) {
-              if (dropInfo.location === DockLocation.LEFT || dropInfo.location === DockLocation.RIGHT) {
-                return false;
-               if (dropNode.getType() === TabSetNode.TYPE) {
-                  // const p = dropNode.getParent();
-                  // if (p && p.getType() === RowNode.TYPE && p.getOrientation() === Orientation.HORZ && p.getChildren().length >= MAXTABSETS) {
-                  console.log("No")
-                  return false;
-                  // }
-                } else if (dropNode.getType() === RowNode.TYPE && dropNode.getId() === m.model.getRoot().getId()) {
-                  console.log("NO");
-                  return false;
-                }
-       
-      
-            }
-            return true;
-          } */
-
     });
-    _setCurrentModel(m);
-  }
+  }, [currentModel]);
+
+
+  const [maxPanels, setMaxPanels] = useState(1);
+
+
 
   const factory = (node: TabNode) => {
     var component = node.getComponent();
