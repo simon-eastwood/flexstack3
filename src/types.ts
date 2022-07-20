@@ -3,7 +3,7 @@ import { Model, Node } from 'flexlayout-react';
 export interface IAnalyzedModel {
     model: Model,
     preferredWidth: number,
-    nrOfHorizontalTabsets: number
+    nrOfTabsets: number
 }
 
 export interface IDimensions {

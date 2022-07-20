@@ -30,14 +30,14 @@ const bundleExample = {
         {
             "type": "pdf",
             "uri": "https://patentimages.storage.googleapis.com/68/80/73/6a17a66e9ec8c5/US11107588.pdf#view=FitH",
-            "title": "Nr 4",
+            "title": "Orig Claims",
             "doPrechack": false,
             "panelPreferences": [-1.2, -1.2, -1.2, -1.2, 4.1]
         },
         {
             "type": "pdf",
             "uri": "https://www.ibm.com/downloads/cas/GB8ZMQZ3#view=FitH",
-            "title": "Nr 5",
+            "title": "Machine Learning",
             "doPrecheck": false,
             "panelPreferences": [-1.5, 2.1, 3.1, 4.1, 5.1]
         }
@@ -53,6 +53,7 @@ const w2wTemplateLayout: { name: string, model: IJsonModel } = {
             // "tabSetEnableDivide": false, // it keeps things simpler for moving tabs if all tabsets are labelled with a panel nr
             // "enableEdgeDock": false, // otherwise the user can create new rows by dragging into the edge
             //"tabEnableClose": false
+            "tabSetClassNameHeader": "MyTabsetClass"
         }, // {tabSetEnableTabStrip:false}, // to have just splitters
         layout: {
             "type": "row",
@@ -60,6 +61,9 @@ const w2wTemplateLayout: { name: string, model: IJsonModel } = {
                 {
                     "type": "tabset",
                     "selected": 0,
+                    "config": {
+                        "name": "1"
+                    },
                     "children": [
                         {
                             "name": "",
@@ -75,6 +79,9 @@ const w2wTemplateLayout: { name: string, model: IJsonModel } = {
                 {
                     "type": "tabset",
                     "selected": 0,
+                    "config": {
+                        "name": "2"
+                    },
                     "children": [
                         {
                             "type": "tab",
@@ -90,6 +97,9 @@ const w2wTemplateLayout: { name: string, model: IJsonModel } = {
                 {
                     "type": "tabset",
                     "selected": 0,
+                    "config": {
+                        "name": "3"
+                    },
                     "children": [
                         {
                             "type": "tab",
@@ -106,6 +116,9 @@ const w2wTemplateLayout: { name: string, model: IJsonModel } = {
                 {
                     "type": "tabset",
                     "selected": 0,
+                    "config": {
+                        "name": "4"
+                    },
                     "children": [
                         {
                             "type": "tab",
@@ -120,6 +133,9 @@ const w2wTemplateLayout: { name: string, model: IJsonModel } = {
                 {
                     "type": "tabset",
                     "selected": 0,
+                    "config": {
+                        "name": "5"
+                    },
                     "children": [
                         {
                             "type": "tab",

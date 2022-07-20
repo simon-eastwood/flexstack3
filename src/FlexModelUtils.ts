@@ -1,4 +1,5 @@
 import { Model, TabNode, TabSetNode, Orientation, Actions, Action, Node as FLNode, DockLocation, RowNode } from 'flexlayout-react';
+import { mainModule } from 'process';
 import { IAnalyzedModel, IDimensions } from './types';
 
 interface IConfig {
@@ -129,33 +130,20 @@ const analyseRow = (row: RowNode, updateIfNeeded: boolean, safeToSetWidth: boole
 
 
 const analyseRowTabs = (row: RowNode): number => {
-    let nrOfHTabSets = 0;
+    let nrOfTabSets = 0;
     console.log("analying row tabs")
     
-    // for a vertial row, the nr Of tabsets = max of child rows and 1
-    if (row.getOrientation() === Orientation.VERT) {
-        nrOfHTabSets = 1;
-    }
-
     row.getChildren().forEach(node => {
         if (node.getType() === TabSetNode.TYPE) {
-            if (row.getOrientation() === Orientation.HORZ) {
-                nrOfHTabSets++;
-            } 
-        } else if (node.getType() === RowNode.TYPE ) {
-            // recurse for child row
-            const childRowNrOfHTabSets = analyseRowTabs(node as RowNode);
-            if (row.getOrientation() === Orientation.HORZ) {  
-                nrOfHTabSets += childRowNrOfHTabSets;
-            } else {
-                // I'm a vertical row, so take the max of chilren
-                console.log("Hit vertical row")
-                nrOfHTabSets = max(nrOfHTabSets, childRowNrOfHTabSets)!;
-            }
+            nrOfTabSets++;
+            
+        } else if (node.getType() === RowNode.TYPE) {
+            //recurse
+            nrOfTabSets += analyseRowTabs (node as RowNode)
         }
     })
 
-    return nrOfHTabSets;
+    return nrOfTabSets;
 }
 
 export const analyseModel = (modelToAnalyse: Model, updateIfNeeded: boolean = true, alsoSetWidth: boolean = false): IAnalyzedModel => {
@@ -168,7 +156,7 @@ export const analyseModel = (modelToAnalyse: Model, updateIfNeeded: boolean = tr
     const result: IAnalyzedModel = {
         model: modelToAnalyse,
         preferredWidth: size,
-        nrOfHorizontalTabsets: tabs
+        nrOfTabsets: tabs
     }
 
     console.log(result);
@@ -322,22 +310,27 @@ const tabToDestination = (tab: TabNode, maxPanel: number = 4): Destination => {
 
 
 export const addTabset = (m: IAnalyzedModel) => {
-    console.log("ADDED")
+
 
      const a = Actions.addNode(  {type:"tab", component: "pdf", config:         {
             "type": "pdf",
             "uri": "https://www.ibm.com/downloads/cas/GB8ZMQZ3#view=FitH",
-            "title": "Nr 5",
+            "title": "ML",
             "doPrecheck": false,
             "panelPreferences": [-1.5, 2.1, 3.1, 4.1, 5.1]
         }},  m.model.getRoot().getId(), DockLocation.RIGHT, 0, true)
 
-    m.model.doAction(a);
+    const n = m.model.doAction(a);
+    console.log(n);
+    if (n?.getParent()?.getType() === TabSetNode.TYPE) {
+        const rename = Actions.updateNodeAttributes("" + n?.getParent()?.getId(), { config: { name: "" + (m.nrOfTabsets + 1) }});
+        m.model.doAction(rename);
+    }
     
 
 }
 
-export const equaliseWidth = (m: IAnalyzedModel) => {
+export const equalise = (m: IAnalyzedModel) => {
     console.log("Equalise");
     type Attrs = {
             weight?: number,
@@ -349,22 +342,11 @@ export const equaliseWidth = (m: IAnalyzedModel) => {
   
     console.log ("Root orientation is" + m.model.getRoot().getOrientation() )
     m.model.visitNodes(node => {
-        if (node.getType() === TabSetNode.TYPE && node.getParent()!.getType() === RowNode.TYPE) {
-            const p = node.getParent()!;
-          
-            if (p.getType() === RowNode.TYPE) {
-                if (p.getOrientation() === Orientation.HORZ && p.getChildren().length > 1) {
+        if (node.getType() === TabSetNode.TYPE || node.getType()  === RowNode.TYPE) {
+        
                               const setSize = Actions.updateNodeAttributes(node.getId(), attrs);
                     m.model.doAction(setSize);
-                    console.log ("Setting size of " )
-                } else {
-                                    /* const setSize = Actions.updateNodeAttributes(node.getId(), attrs);
-                    m.model.doAction(setSize); */
-                    console.log("Not setting size of " + node.getId()); console.log(p.getOrientation()); 
-                    console.log (m.model.toJson())
-                }
-            }
-  
+       
         }
     });
 
